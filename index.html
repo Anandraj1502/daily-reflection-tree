@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reflection Tool</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #020617, #0f172a);
+      color: white;
+      text-align: center;
+      padding: 40px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 30px;
+      background: #111827;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    button {
+      margin: 10px;
+      padding: 14px;
+      width: 80%;
+      border: none;
+      border-radius: 12px;
+      background: #3b82f6;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2563eb;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <h3 id="progress"></h3>
+  <h2 id="text"></h2>
+  <div id="options"></div>
+</div>
+
+<script>
+let tree={},current="START",state={axis1:"",axis2:"",axis3:""},step=0;
+
+fetch("../tree/reflection-tree.json")
+.then(res=>res.json())
+.then(data=>{tree=data;render();});
+
+function render(){
+  let node = tree[current];
+
+  document.getElementById("text").innerText = node.text;
+  document.getElementById("progress").innerText = "Step " + step;
+
+  let div = document.getElementById("options");
+  div.innerHTML = "";
+
+  if(node.type === "end") return;
+
+  // 🔥 SUMMARY
+  if(node.type === "summary"){
+    let insight = "";
+
+    if(state.axis1==="internal" && state.axis2==="contribution" && state.axis3==="others"){
+      insight="You showed strong ownership and outward thinking — great growth pattern.";
+    } 
+    else if(state.axis1==="external"){
+      insight="You felt things were outside your control. Small actions can shift control back.";
+    } 
+    else if(state.axis2==="entitlement"){
+      insight="You focused more on expectations than contribution. Shifting focus can increase impact.";
+    }
+    else {
+      insight="Your patterns are mixed — awareness is the first step toward improvement.";
+    }
+
+    let txt = node.text
+      .replace("{axis1}", state.axis1 || "unclear")
+      .replace("{axis2}", state.axis2 || "unclear")
+      .replace("{axis3}", state.axis3 || "unclear")
+      .replace("{insight}", insight);
+
+    document.getElementById("text").innerText = txt;
+
+    let finish = document.createElement("button");
+    finish.innerText = "Finish";
+    finish.onclick = () => {
+      current = node.next;
+      render();
+    };
+
+    let restart = document.createElement("button");
+    restart.innerText = "Restart";
+    restart.onclick = () => {
+      current = "START";
+      state = {axis1:"",axis2:"",axis3:""};
+      step = 0;
+      render();
+    };
+
+    div.appendChild(finish);
+    div.appendChild(restart);
+    return;
+  }
+
+  // 🔥 QUESTION
+  if(node.type === "question"){
+    node.options.forEach(opt => {
+      let btn = document.createElement("button");
+      btn.innerText = opt;
+
+      btn.onclick = () => {
+
+        // store signals
+        if(node.signal){
+          node.signal.forEach(s => {
+            let [a,v] = s.split(":");
+            state[a] = v;
+          });
+        }
+
+        // FIXED navigation
+        if(typeof node.next === "object"){
+          current = node.next[opt];
+        } else {
+          current = node.next;
+        }
+
+        step++;
+        render();
+      };
+
+      div.appendChild(btn);
+    });
+
+  } else {
+    // reflection / bridge
+    let btn = document.createElement("button");
+    btn.innerText = "Continue";
+
+    btn.onclick = () => {
+      current = node.next;
+      step++;
+      render();
+    };
+
+    div.appendChild(btn);
+  }
+}
+</script>
+
+</body>
+</html>

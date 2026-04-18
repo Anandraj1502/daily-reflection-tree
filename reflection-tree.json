@@ -1,0 +1,72 @@
+{
+  "START":{"type":"start","text":"Good evening. Let's reflect on your day.","next":"Q1"},
+
+  "Q1":{"type":"question","text":"How was your day?","options":["Energizing","Heavy","Mixed","Frustrating"],
+  "next":{"Energizing":"Q2A","Mixed":"Q2A","Heavy":"Q2B","Frustrating":"Q2B"}},
+
+  "Q2A":{"type":"question","text":"What helped things go well?","options":["My effort","Planning","Team","Luck"],
+  "signal":["axis1:internal"],"next":"Q2A_FOLLOW"},
+
+  "Q2A_FOLLOW":{"type":"question","text":"What did you do after success?","options":["Improved further","Relaxed","Shared with team","Ignored"],
+  "next":"R1_INT"},
+
+  "Q2B":{"type":"question","text":"What happened when things went wrong?","options":["Tried fixing","Blamed others","Waited","Felt stuck"],
+  "signal":["axis1:external"],"next":"Q2B_FOLLOW"},
+
+  "Q2B_FOLLOW":{"type":"question","text":"What did you do after that moment?","options":["Tried again","Gave up","Asked help","Ignored"],
+  "next":"R1_EXT"},
+
+  "R1_INT":{"type":"reflection","text":"You showed ownership and initiative today.","next":"B1"},
+  "R1_EXT":{"type":"reflection","text":"You felt things were outside your control — but you still had choices.","next":"B1"},
+
+  "B1":{"type":"bridge","text":"Now let’s shift from control to contribution.","next":"Q3"},
+
+  "Q3":{"type":"question","text":"What was your role in team interactions?","options":["Helped others","Did my work","Expected credit","Avoided work"],
+  "next":{"Helped others":"Q4A","Did my work":"Q4A","Expected credit":"Q4B","Avoided work":"Q4B"}},
+
+  "Q4A":{"type":"question","text":"Why did you contribute?","options":["Wanted to help","Responsibility","Team success","Habit"],
+  "signal":["axis2:contribution"],"next":"Q4A_FOLLOW"},
+
+  "Q4A_FOLLOW":{"type":"question","text":"Did your action impact someone?","options":["Yes directly","Yes indirectly","Not sure","No"],
+  "next":"R2_POS"},
+
+  "Q4B":{"type":"question","text":"What made you feel negative?","options":["Unfairness","No recognition","Others weak","No value"],
+  "signal":["axis2:entitlement"],"next":"Q4B_FOLLOW"},
+
+  "Q4B_FOLLOW":{"type":"question","text":"What did you do about it?","options":["Complained","Ignored","Reduced effort","Nothing"],
+  "next":"R2_NEG"},
+
+  "R2_POS":{"type":"reflection","text":"You focused on contribution — this builds long-term trust.","next":"B2"},
+  "R2_NEG":{"type":"reflection","text":"Focusing on expectations can reduce your control over outcomes.","next":"B2"},
+
+  "B2":{"type":"bridge","text":"Finally, let’s expand your perspective.","next":"Q5"},
+
+  "Q5":{"type":"question","text":"Who were you thinking about most today?","options":["Myself","My tasks","Team","Customer"],
+  "next":{"Myself":"Q6A","My tasks":"Q6A","Team":"Q6B","Customer":"Q6B"}},
+
+  "Q6A":{"type":"question","text":"What mattered most to you?","options":["Stress","Performance","Deadlines","Results"],
+  "signal":["axis3:self"],"next":"Q6A_FOLLOW"},
+
+  "Q6A_FOLLOW":{"type":"question","text":"Did this thinking help you grow?","options":["Yes","No","Not sure","Partially"],
+  "next":"R3_SELF"},
+
+  "Q6B":{"type":"question","text":"What impact were you thinking about?","options":["Team success","Helping others","Customer result","Shared goal"],
+  "signal":["axis3:others"],"next":"Q6B_FOLLOW"},
+
+  "Q6B_FOLLOW":{"type":"question","text":"Who benefited most?","options":["Team","Customer","Everyone","Not sure"],
+  "next":"R3_OTHERS"},
+
+  "R3_SELF":{"type":"reflection","text":"You focused inward today — expanding outward can increase meaning.","next":"SUMMARY"},
+  "R3_OTHERS":{"type":"reflection","text":"You looked beyond yourself — this creates deeper impact.","next":"SUMMARY"},
+
+  "SUMMARY":{
+    "type":"summary",
+    "text":"Today:\n• Agency: {axis1}\n• Contribution: {axis2}\n• Perspective: {axis3}\n\nInsight:\n{insight}",
+    "next":"END"
+  },
+
+  "END":{
+    "type":"end",
+    "text":"See you tomorrow."
+  }
+}
